@@ -1,7 +1,9 @@
 import json
+import pprint
 
 import flask
 import requests
+import sqlalchemy
 from flask import jsonify
 from flask_cors import CORS
 
@@ -12,7 +14,7 @@ app.config["DEBUG"] = True
 
 @app.route('/', methods=['GET'])
 def home():
-    return "<h1>Welcome to drafty</h1>"
+    return
 
 
 @app.route('/api/v1/', methods=['GET'])
