@@ -2,15 +2,8 @@ import json
 
 import requests
 from sqlalchemy import create_engine
+from sqlalchemy.sql import text
 
-'''
-    engine = create_engine("mysql+pymysql://test@localhost/drafty")
-
-    con = engine.connect()  # Connect to the MySQL engine
-result = con.execute("DROP TABLE IF EXISTS players;")
-con.close()
-
-'''
 url = "https://api.sleeper.app/v1/players/nfl"
 
 r = requests.get(url)
@@ -29,15 +22,29 @@ for player in players:
         else:
             active_players.append(player)
 
-
 players = sorted(active_players, key=lambda k: k['last_name'])
-count = 0
-
-
+data = []
 for player in players:
-    print(player['first_name'] + " " + player['last_name'] +
-          " " + player['position'] + " " + str(player['team']))
-    count = count + 1
-print("There are " + str(count) + " active players.")
-with open("data.json", "w") as outfile:
-    json.dump(players, outfile)
+    data.append(
+        {
+            'first_name': player['first_name'],
+            'last_name': player['last_name'],
+            'team': str(player['team']),
+            'position': player['position']
+        }
+    )
+
+
+engine = create_engine("mysql+pymysql://test@localhost/drafty")
+
+con = engine.connect()
+con.execute("DROP TABLE IF EXISTS players;")
+con.execute("CREATE TABLE IF NOT EXISTS players(firstName varchar(200), lastName varchar(200), team varchar(4), position varchar(3));")
+
+
+statement = text(
+    """INSERT INTO players(firstName, lastName, team, position) VALUES(:first_name, :last_name, :team, :position)""")
+
+for line in data:
+    con.execute(statement, **line)
+con.close()
