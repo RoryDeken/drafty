@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+  </head>
+  <body>
+    <div id="app">
+      <ul>
+      <li v-for="player in players" >
+      {{ player.firstName }}   {{ player.lastName }} |    {{ player.team }}  | {{ player.position }} | {{ player.id }}
+    </li>
+    </ul>
+  
+  
+    </div>
+    <script type="text/javascript">
+      new Vue({ el: '#app', data() { 
+        return { players: null } }, 
+        mounted() {
+    // GET request using fetch with error handling
+    this.players = ""
+    fetch("http://localhost:5000")
+      .then(async response => {
+        const data = await response.json();
+    
+        // check for error response
+        if (!response.ok) {
+          // get error message from body or default to response statusText
+          const error = (data && data.message) || response.statusText;
+          return Promise.reject(error);
+        }
+        this.players = data
+      })
+      .catch(error => {
+        this.errorMessage = error;
+        console.error("There was an error!", error);
+      });
+  }})
+    </script>
+  </body>
+</html>
