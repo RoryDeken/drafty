@@ -6,7 +6,10 @@
     <div id="app">
       <ul>
       <li v-for="player in players" >
+        <button @click="add(player.id)">
       {{ player.firstName }}   {{ player.lastName }} |    {{ player.team }}  | {{ player.position }} | {{ player.id }}
+    </button>
+    </a>
     </li>
     </ul>
   
@@ -34,7 +37,19 @@
         this.errorMessage = error;
         console.error("There was an error!", error);
       });
-  }})
+  },
+  methods: {
+    
+    add: function(id){
+    
+      fetch('http://localhost:5000/select/', {
+    method: 'post',
+    body: JSON.stringify(id)
+  }).then(response => response.json())
+  .then(data => console.log(data));
+    }
+  }
+})
     </script>
   </body>
 </html>

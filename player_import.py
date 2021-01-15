@@ -41,11 +41,14 @@ engine = create_engine("mysql+pymysql://test@localhost/drafty")
 
 con = engine.connect()
 con.execute("DROP TABLE IF EXISTS players;")
-con.execute("CREATE TABLE IF NOT EXISTS players(firstName varchar(200), lastName varchar(200), team varchar(4), position varchar(3), id varchar(5));")
+con.execute("DROP TABLE IF EXISTS drafted;")
+con.execute(
+    "CREATE TABLE IF NOT EXISTS drafted(round varchar(4), id varchar(5), ownedBy varchar(200));")
+con.execute("CREATE TABLE IF NOT EXISTS players(firstName varchar(200), lastName varchar(200), team varchar(4), position varchar(3), id varchar(5), available BOOL);")
 
 
 statement = text(
-    """INSERT INTO players(firstName, lastName, team, position, id) VALUES(:first_name, :last_name, :team, :position, :id)""")
+    """INSERT INTO players(firstName, lastName, team, position, id, available) VALUES(:first_name, :last_name, :team, :position, :id, TRUE)""")
 
 for line in data:
     con.execute(statement, **line)

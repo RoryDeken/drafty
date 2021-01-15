@@ -3,7 +3,7 @@ import pprint
 
 import flask
 import requests
-from flask import jsonify
+from flask import jsonify, request
 from flask_cors import CORS
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
@@ -34,6 +34,11 @@ json_data = json.dumps(a)
 def home():
 
     return json_data
+
+
+@app.route('/select/', methods=['POST'])
+def add_player():
+    return request.data
 
 
 @app.route('/api/v1/', methods=['GET'])
