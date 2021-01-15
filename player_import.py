@@ -30,7 +30,9 @@ for player in players:
             'first_name': player['first_name'],
             'last_name': player['last_name'],
             'team': str(player['team']),
-            'position': player['position']
+            'position': player['position'],
+            'id': str(player['player_id'])
+
         }
     )
 
@@ -39,11 +41,11 @@ engine = create_engine("mysql+pymysql://test@localhost/drafty")
 
 con = engine.connect()
 con.execute("DROP TABLE IF EXISTS players;")
-con.execute("CREATE TABLE IF NOT EXISTS players(firstName varchar(200), lastName varchar(200), team varchar(4), position varchar(3));")
+con.execute("CREATE TABLE IF NOT EXISTS players(firstName varchar(200), lastName varchar(200), team varchar(4), position varchar(3), id varchar(5));")
 
 
 statement = text(
-    """INSERT INTO players(firstName, lastName, team, position) VALUES(:first_name, :last_name, :team, :position)""")
+    """INSERT INTO players(firstName, lastName, team, position, id) VALUES(:first_name, :last_name, :team, :position, :id)""")
 
 for line in data:
     con.execute(statement, **line)

@@ -3,23 +3,42 @@ import pprint
 
 import flask
 import requests
-import sqlalchemy
 from flask import jsonify
 from flask_cors import CORS
+from sqlalchemy import create_engine
+from sqlalchemy.sql import text
 
 app = flask.Flask(__name__)
 CORS(app)
 app.config["DEBUG"] = True
 
+engine = create_engine("mysql+pymysql://test@localhost/drafty")
+con = engine.connect()
+result = con.execute("SELECT * FROM players;")
+result = result.fetchall()
+con.close()
+
+
+d, a = {}, []
+for rowproxy in result:
+    # rowproxy.items() returns an array like [(key0, value0), (key1, value1)]
+    for column, value in rowproxy.items():
+        # build up the dictionary
+        d = {**d, **{column: value}}
+    a.append(d)
+
+json_data = json.dumps(a)
+
 
 @app.route('/', methods=['GET'])
 def home():
-    return
+
+    return json_data
 
 
 @app.route('/api/v1/', methods=['GET'])
 def get_players():
-    return jsonify(json.loads(open("data.json", "r").read()))
+    return
 
 
 """
