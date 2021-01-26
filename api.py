@@ -5,45 +5,74 @@ import flask
 import requests
 from flask import jsonify, request
 from flask_cors import CORS
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, insert
 from sqlalchemy.sql import text
 
 app = flask.Flask(__name__)
 CORS(app)
 app.config["DEBUG"] = True
-
 engine = create_engine("mysql+pymysql://test@localhost/drafty")
-con = engine.connect()
-result = con.execute("SELECT * FROM players;")
-result = result.fetchall()
-con.close()
 
 
-d, a = {}, []
-for rowproxy in result:
-    # rowproxy.items() returns an array like [(key0, value0), (key1, value1)]
-    for column, value in rowproxy.items():
-        # build up the dictionary
-        d = {**d, **{column: value}}
-    a.append(d)
+def get_all_players():
+    con = engine.connect()
+    result = con.execute(
+        "SELECT * FROM players WHERE ID NOT IN (SELECT id from drafted);")
+    result = result.fetchall()
+    con.close()
+    d, a = {}, []
+    for rowproxy in result:
+        # rowproxy.items() returns an array like [(key0, value0), (key1, value1)]
+        for column, value in rowproxy.items():
+            # build up the dictionary
+            d = {**d, **{column: value}}
+        a.append(d)
 
-json_data = json.dumps(a)
+    return json.dumps(a)
+
+
+def get_drafted_players():
+    con = engine.connect()
+    drafted = con.execute("SELECT * FROM drafted;")
+    drafted = drafted.fetchall()
+    con.close()
+    d, a = {}, []
+    for rowproxy in drafted:
+        # rowproxy.items() returns an array like [(key0, value0), (key1, value1)]
+        for column, value in rowproxy.items():
+            # build up the dictionary
+            d = {**d, **{column: value}}
+        a.append(d)
+
+    return json.dumps(a)
+
+
+def select_player(player):
+    con = engine.connect()
+    data = ({"id": player, "round": 1, "ownedBy": "Team 1"},)
+    statement = text(
+        """INSERT INTO drafted(id, round, ownedBy) VALUES(:id, :round, :ownedBy)""")
+    for line in data:
+        con.execute(statement, **line)
+    con.close()
 
 
 @app.route('/', methods=['GET'])
 def home():
 
-    return json_data
+    return get_all_players()
 
 
 @app.route('/select/', methods=['POST'])
 def add_player():
-    return request.data
+    player = json.loads(request.data)
+    select_player(player)
+    return "Player with id# {} added".format(player)
 
 
-@app.route('/api/v1/', methods=['GET'])
+@app.route('/drafted/', methods=['GET'])
 def get_players():
-    return
+    return get_drafted_players()
 
 
 """

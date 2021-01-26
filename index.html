@@ -5,8 +5,8 @@
   <body>
     <div id="app">
       <ul>
-      <li v-for="player in players" >
-        <button @click="add(player.id)">
+      <li v-for="player in players" v-show="!player.drafted">
+        <button @click="add(player)">
       {{ player.firstName }}   {{ player.lastName }} |    {{ player.team }}  | {{ player.position }} | {{ player.id }}
     </button>
     </a>
@@ -31,6 +31,9 @@
           const error = (data && data.message) || response.statusText;
           return Promise.reject(error);
         }
+        data.forEach((item, i) => {
+          item.drafted = false
+        });
         this.players = data
       })
       .catch(error => {
@@ -40,12 +43,12 @@
   },
   methods: {
     
-    add: function(id){
-    
+    add: function(player){
+      player.drafted = true
       fetch('http://localhost:5000/select/', {
     method: 'post',
-    body: JSON.stringify(id)
-  }).then(response => response.json())
+    body: JSON.stringify(player.id)
+  }).then(response => response.text())
   .then(data => console.log(data));
     }
   }
