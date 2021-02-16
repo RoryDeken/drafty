@@ -4,15 +4,13 @@ import pprint
 import flask
 from flask import jsonify, render_template, request, redirect, url_for, make_response, flash
 from flask_cors import CORS
-
-from sqlalchemy import create_engine, insert
-from sqlalchemy.sql import text
+from models import *
 
 app = flask.Flask(__name__)
 app.secret_key = 'sskfhsjfhskjfhew2342342345%$4%%%'
 CORS(app)
 app.config["DEBUG"] = True
-engine = create_engine("mysql+pymysql://test@localhost/drafty")
+#engine = create_engine("mysql+pymysql://test@localhost/drafty")
 
 
 def get_all_players():
@@ -57,16 +55,18 @@ def select_player(player):
         con.execute(statement, **line)
     con.close()
 
-
+# Move into routes.py eventually
 # Routes
 
     # pages
+
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 @app.route('/index.html')
 def index(path='/'):
-    return render_template('index.html')
+    return redirect('/draftboard', code=301)
+    # return render_template('index.html')
 
 
 @app.route('/page/players/')
@@ -144,24 +144,4 @@ def find(player_id):
         return "Player not found"
 
 
-"""
-Routes
-     GET/
-        . GET Available players
-        . GET Drafted players/draft board
-        . GET Teams with current roster
-            * Team roster structure
-
-    POST/
-        . Add player to Team/remove from Available players
-        
-Admin things
-    . Ability to create an account/Team
-        * Different roles commisoner vs owner
-    . Create a league draft with time and number of teams
-        * Allow league settings, roster type (2WR/2RB etc), scoring type (PPR/Standard etc)
-        * Allow commisoner to pause/start and edit picks
-        * Allow snake format for draft
-        * Allow ability for teams to be forced to draft their starting lineup first
-"""
 app.run(port=8080)

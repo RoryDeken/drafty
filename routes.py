@@ -1,7 +1,54 @@
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+@app.route('/index.html')
+def index(path='/'):
+    return redirect('/draftboard', code=301)
+    # return render_template('index.html')
+
+
+@app.route('/page/players/')
+@app.route('/page/players.html')
+def players_page():
+    return render_template('players.html')
+
+
+@app.route('/login')
+@app.route('/login.html')
+def login():
+    return render_template('login.html')
+
+
+@app.route('/basic_table')
+@app.route('/basic_table.html')
+def basic_table():
+    return render_template('basic_table.html')
+
+
+@app.route('/general')
+@app.route('/general.html')
+def general():
+    return render_template('general.html')
+
+
+@app.route('/grids')
+@app.route('/grids.html')
+def grids():
+    return render_template('grids.html')
+
+
+@app.route('/widgets')
+@app.route('/widgets.html')
+def widgets():
+    return render_template('widgets.html')
+
+
+@app.route('/draftboard/')
+@app.route('/draftboard.html')
+def draftboard():
+    return render_template('draftboard.html')
+
+# API calls
 
 
 @app.route('/players/')
@@ -12,7 +59,7 @@ def get_all():
 @app.route('/players/select/<id>', methods=['POST'])
 def add_player(id):
     select_player(id)
-    return "Player with id# {} added".format(id)
+    return
 
 
 @app.route('/players/drafted/')
