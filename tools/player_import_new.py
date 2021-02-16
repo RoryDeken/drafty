@@ -2,32 +2,10 @@ import json
 
 import requests
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, Sequence
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import text
 from sqlalchemy.ext.declarative import declarative_base
 
-engine = create_engine("mysql+pymysql://test@localhost/drafty", echo=True)
-Base = declarative_base()
-
-
-class Player(Base):
-    __tablename__ = 'players'
-    id = Column(String(5), Sequence('player_id_seq'), primary_key=True)
-    firstName = Column(String(200))
-    lastName = Column(String(200))
-    team = Column(String(5))
-    position = Column(String(3))
-    available = Column(Boolean)
-
-    def __repr__(self):
-        return "Player(firstName='%s', lastName='%s', team='%s', position='%s', available='%s')>" % (self.firstName, self.lastName, self.team, self.position, self.available)
-
-
-Base.metadata.create_all(engine)
-# OLD CODE SECTION
-
-
-# BEGIN OLD CODE
-"""
 url = "https://api.sleeper.app/v1/players/nfl"
 
 r = requests.get(url)
@@ -60,21 +38,43 @@ for player in players:
         }
     )
 
-# Rewrite this
+engine = create_engine("mysql+pymysql://test@localhost/drafty", echo=True)
+Base = declarative_base()
+Session = sessionmaker(bind=engine)
 
 
-con = engine.connect()
-con.execute("DROP TABLE IF EXISTS players;")
-con.execute("DROP TABLE IF EXISTS drafted;")
-con.execute(
-    "CREATE TABLE IF NOT EXISTS drafted(round varchar(4), id varchar(5), ownedBy varchar(200));")
-con.execute("CREATE TABLE IF NOT EXISTS players(firstName varchar(200), lastName varchar(200), team varchar(4), position varchar(3), id varchar(5), available BOOL);")
+class Player(Base):
+    __tablename__ = 'players'
+    id = Column(String(5), primary_key=True)
+    firstName = Column(String(200))
+    lastName = Column(String(200))
+    team = Column(String(5))
+    position = Column(String(3))
+    available = Column(Boolean)
+
+    def __repr__(self):
+        return "Player(id='%s', firstName='%s', lastName='%s', team='%s', position='%s', available='%s')>" % (self.id, self.firstName, self.lastName, self.team, self.position, self.available)
 
 
-statement = text(
-"""  # """INSERT INTO players(firstName, lastName, team, position, id, available) VALUES(:first_name, :last_name, :team, :position, :id, TRUE)""")
-"""
-for line in data:
-    con.execute(statement, **line)
-con.close()
-"""
+class Drafted(Base):
+    __tablename__ = 'drafted'
+    id = Column(String(5), primary_key=True)
+    firstName = Column(String(200))
+    lastName = Column(String(200))
+    team = Column(String(5))
+    position = Column(String(3))
+    round = Column(Integer())
+    ownedBy = Column(String(200))
+
+    def __repr__(self):
+        return "Player(id='%s', firstName='%s', lastName='%s', team='%s', position='%s', round='%s', ownedBy='%s')>" % (self.id, self.firstName, self.lastName, self.team, self.position, self.round, self.ownedBy)
+
+
+Base.metadata.create_all(engine)
+session = Session()
+for d in data:
+    current = Player(id=d['id'], firstName=d['first_name'], lastName=d['last_name'],
+                     team=d['team'], position=d['position'], available=True)
+    session.add(current)
+
+session.commit()
