@@ -1,6 +1,5 @@
 from models import *
 import flask
-import json
 import pprint
 from flask import jsonify, render_template, request, redirect, url_for, make_response, flash
 from flask import current_app as app
@@ -8,63 +7,54 @@ from .models import db, Player, Drafted
 
 
 def get_all_players():
-    t = jsonify(Player.query.all())
-    return t
-    """
-    con = engine.connect()
-    result = con.execute(
-        "SELECT * FROM players WHERE ID NOT IN (SELECT id from drafted) LIMIT 15;")
-    result = result.fetchall()
-    con.close()
-    Player.
-    d, a = {}, []
-    for rowproxy in result:
-        # rowproxy.items() returns an array like [(key0, value0), (key1, value1)]
-        for column, value in rowproxy.items():
-            # build up the dictionary
-            d = {**d, **{column: value}}
-        a.append(d)
-
-    return (a)
-    """
+    players = []
+    for instance in session.query(Player):
+        players.append(
+            {"firstName": instance.firstName, "lastName": instance.lastName, "id": instance.id,
+             "team": instance.team, "position": instance.position, "available": instance.available}
+        )
+    return jsonify(players)
 
 
 def get_drafted_players():
-    con = engine.connect()
-    drafted = con.execute("SELECT * FROM drafted;")
-    drafted = drafted.fetchall()
-    con.close()
-    d, a = {}, []
-    for rowproxy in drafted:
-        # rowproxy.items() returns an array like [(key0, value0), (key1, value1)]
-        for column, value in rowproxy.items():
-            # build up the dictionary
-            d = {**d, **{column: value}}
-        a.append(d)
-
-    return json.dumps(a)
+    drafted_players = []
+    for instance in session.query(Drafted):
+        drafted_players.append(
+            {"id": instance.id}
+        )
+    return jsonify(drafted_players)
 
 
-def select_player(player):
-    con = engine.connect()
-    data = ({"id": player, "round": 1, "ownedBy": "Team 1"},)
-    statement = text(
-        """INSERT INTO drafted(id, round, ownedBy) VALUES(:id, :round, :ownedBy)""")
-    for line in data:
-        con.execute(statement, **line)
-    con.close()
+def select_player(id):
+    selected_player = get_player(id)
+    new_drafted_player = Drafted(
+        id=selected_player.id,
+        firstName=selected_player.firstName,
+        lastName=selected_player.lastName,
+        team=selected_player.team,
+        position=selected_player.position,
+        round=1,
+        ownedBy='Team 1'
+    )
+    session.add(new_drafted_player)
+    session.commit()
 
-# Move into routes.py eventually
+
+def get_player(id):
+    player = Player.query.filter(Player.id == id).first()
+    session.commit()
+    return player
+
 # Routes
 
     # pages
 
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-@app.route('/index.html')
-def index(path='/'):
-    return redirect('/draftboard', code=301)
+# @app.route('/', defaults={'path': ''})
+# @app.route('/<path:path>')
+@app.route('/')
+def index():
+    return 'hello'
     # return render_template('index.html')
 
 
@@ -133,16 +123,7 @@ def get_drafted():
     return get_drafted_players()
 
 
-@app.route('/find/')
-def find(player_id):
-    player_id = request.args.get('player_id')
-    if player_id:
-        con = engine.connect()
-        result = con.execute(
-            "SELECT * FROM players WHERE ID ={};".format(player_id))
-        result = result.fetchone()
-        first = result[0]
-        last = result[1]
-        return first + " " + last
-    else:
-        return "Player not found"
+@app.route('/players/search')
+def search_player(player_id):
+    get_player(request.args.get('player_id'))
+    return 'This is being tested'
