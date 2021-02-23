@@ -1,6 +1,4 @@
-from models import *
 import flask
-import pprint
 from flask import jsonify, render_template, request, redirect, url_for, make_response, flash
 from flask import current_app as app
 from .models import db, Player, Drafted
@@ -8,7 +6,7 @@ from .models import db, Player, Drafted
 
 def get_all_players():
     players = []
-    for instance in session.query(Player):
+    for instance in db.session.query(Player):
         players.append(
             {"firstName": instance.firstName, "lastName": instance.lastName, "id": instance.id,
              "team": instance.team, "position": instance.position, "available": instance.available}
@@ -18,7 +16,7 @@ def get_all_players():
 
 def get_drafted_players():
     drafted_players = []
-    for instance in session.query(Drafted):
+    for instance in db.session.query(Drafted):
         drafted_players.append(
             {"id": instance.id}
         )
@@ -36,13 +34,13 @@ def select_player(id):
         round=1,
         ownedBy='Team 1'
     )
-    session.add(new_drafted_player)
-    session.commit()
+    db.session.add(new_drafted_player)
+    db.session.commit()
 
 
 def get_player(id):
     player = Player.query.filter(Player.id == id).first()
-    session.commit()
+    db.session.commit()
     return player
 
 # Routes
