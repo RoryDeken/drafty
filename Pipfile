@@ -6,8 +6,8 @@ name = "pypi"
 [packages]
 requests = "*"
 flask = "*"
+click= "*"
 flask-cors = "*"
-sqlalchemy = "*"
 pymysql = {extras = ["rsa"], version = "*"}
 sqlalchemy-utils = "*"
 python-dotenv = "*"
