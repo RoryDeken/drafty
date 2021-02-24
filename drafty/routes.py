@@ -6,10 +6,18 @@ from .models import db, Player, Drafted
 
 def get_all_players():
     players = []
-    for instance in db.session.query(Player):
+    for instance in db.session.query(Player).order_by(Player.rank):
         players.append(
-            {"firstName": instance.firstName, "lastName": instance.lastName, "id": instance.id,
-             "team": instance.team, "position": instance.position, "available": instance.available}
+            {
+                "id": instance.id,
+                "espnId": instance.espnId,
+                "rank": instance.rank,
+                "firstName": instance.firstName,
+                "lastName": instance.lastName,
+                "team": instance.team,
+                "position": instance.position,
+                "available": instance.available
+            }
         )
     return jsonify(players)
 
@@ -18,7 +26,14 @@ def get_drafted_players():
     drafted_players = []
     for instance in db.session.query(Drafted):
         drafted_players.append(
-            {"id": instance.id}
+            {
+                "id": instance.id,
+                "firstName": instance.firstName,
+                "lastName": instance.lastName,
+                "team": instance.team,
+                "position": instance.position,
+                "ownedBy": instance.ownedBy,
+            }
         )
     return jsonify(drafted_players)
 
@@ -32,10 +47,10 @@ def select_player(id):
         team=selected_player.team,
         position=selected_player.position,
         round=1,
-        ownedBy='Team 1'
+        ownedBy='N/A'
     )
     db.session.add(new_drafted_player)
-    db.session.commit()
+    return jsonify('Player added'), 200, {'ContentType': 'application/json'}
 
 
 def get_player(id):
@@ -112,8 +127,7 @@ def get_all():
 
 @app.route('/players/select/<id>', methods=['POST'])
 def add_player(id):
-    select_player(id)
-    return
+    return select_player(id)
 
 
 @app.route('/players/drafted/')
@@ -122,6 +136,18 @@ def get_drafted():
 
 
 @app.route('/players/search')
-def search_player(player_id):
-    get_player(request.args.get('player_id'))
-    return 'This is being tested'
+def search_player(player_id=''):
+    arg = request.args.get('player_id')
+    if arg:
+        player = get_player(arg)
+        if player:
+            player = {
+                "name": player.firstName + " " + player.lastName,
+                "team": player.team,
+                "position": player.position
+            }
+            return jsonify(player)
+        else:
+            return "Player ID not found"
+    else:
+        return "Please enter a player ID"
