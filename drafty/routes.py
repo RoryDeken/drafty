@@ -6,7 +6,8 @@ from .models import db, Player, Drafted
 
 def get_all_players():
     players = []
-    for instance in db.session.query(Player).order_by(Player.rank):
+    for instance in db.session.query(Player).order_by(Player.rank.asc()):
+        print(type(instance.rank))
         players.append(
             {
                 "id": instance.id,

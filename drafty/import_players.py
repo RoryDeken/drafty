@@ -31,10 +31,10 @@ def importplayers():
             player['espn_id'] = 'N/A'
 
         if 'search_rank' not in player:
-            player['search_rank'] = 'N/A'
+            player['search_rank'] = 999999
         else:
             if player['search_rank'] is None:
-                player['search_rank'] = 'N/A'
+                player['search_rank'] = 999999
 
     players = sorted(active_players, key=lambda k: k['last_name'])
 
@@ -46,7 +46,7 @@ def importplayers():
             Player(
                 id=player['player_id'],
                 espnId=player['espn_id'],
-                rank=player['search_rank'],
+                rank=int(player['search_rank']),
                 firstName=player['first_name'],
                 lastName=player['last_name'],
                 team=str(player['team']),

@@ -4,7 +4,7 @@ from . import db
 class Player(db.Model):
     __tablename__ = 'players'
     id = db.Column(db.String(5), primary_key=True)
-    rank = db.Column(db.String(30))
+    rank = db.Column(db.Integer())
     espnId = db.Column(db.String(30))
     firstName = db.Column(db.String(200))
     lastName = db.Column(db.String(200))
