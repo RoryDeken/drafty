@@ -68,8 +68,7 @@ def get_player(id):
 # @app.route('/<path:path>')
 @app.route('/')
 def index():
-    return 'hello'
-    # return render_template('index.html')
+    return render_template('index.html')
 
 
 @app.route('/page/players/')
@@ -78,10 +77,10 @@ def players_page():
     return render_template('players.html')
 
 
-@app.route('/login')
-@app.route('/login.html')
-def login():
-    return render_template('login.html')
+# @app.route('/login')
+# @app.route('/login.html')
+# def login():
+#    return render_template('login.html')
 
 
 @app.route('/basic_table')
