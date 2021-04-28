@@ -50,8 +50,7 @@ def importplayers():
                 firstName=player['first_name'],
                 lastName=player['last_name'],
                 team=str(player['team']),
-                position=player['position'],
-                available=True
+                position=player['position']
             )
         )
 
