@@ -6,7 +6,7 @@ from .models import db, Player, Drafted
 
 def get_all_players():
     players = []
-    for instance in db.session.query(Player).order_by(Player.rank.asc()):
+    for instance in db.session.query(Player).filter(Player.id.notin_(db.session.query(Drafted.player_id))).order_by(Player.rank.asc()):
         players.append(
             {
                 "id": instance.id,
@@ -69,13 +69,13 @@ def get_player(id):
 
 # @app.route('/', defaults={'path': ''})
 # @app.route('/<path:path>')
-@app.route('/')
+@ app.route('/')
 def index():
     return render_template('index.html')
 
 
-@app.route('/page/players/')
-@app.route('/page/players.html')
+@ app.route('/page/players/')
+@ app.route('/page/players.html')
 def players_page():
     return render_template('players.html')
 
@@ -86,59 +86,59 @@ def players_page():
 #    return render_template('login.html')
 
 
-@app.route('/basic_table')
-@app.route('/basic_table.html')
+@ app.route('/basic_table')
+@ app.route('/basic_table.html')
 def basic_table():
     return render_template('basic_table.html')
 
 
-@app.route('/general')
-@app.route('/general.html')
+@ app.route('/general')
+@ app.route('/general.html')
 def general():
     return render_template('general.html')
 
 
-@app.route('/grids')
-@app.route('/grids.html')
+@ app.route('/grids')
+@ app.route('/grids.html')
 def grids():
     return render_template('grids.html')
 
 
-@app.route('/widgets')
-@app.route('/widgets.html')
+@ app.route('/widgets')
+@ app.route('/widgets.html')
 def widgets():
     return render_template('widgets.html')
 
 
-@app.route('/test')
+@ app.route('/test')
 def test_route():
     return get_all_players()
 
 
-@app.route('/draftboard/')
-@app.route('/draftboard.html')
+@ app.route('/draftboard/')
+@ app.route('/draftboard.html')
 def draftboard():
     return render_template('draftboard.html')
 
 # API calls
 
 
-@app.route('/players/')
+@ app.route('/players/')
 def get_all():
     return get_all_players()
 
 
-@app.route('/players/select/<id>/<draft>', methods=['POST'])
+@ app.route('/players/select/<id>/<draft>', methods=['POST'])
 def add_player(id, draft):
     return select_player(id, draft)
 
 
-@app.route('/players/drafted/')
+@ app.route('/players/drafted/')
 def get_drafted():
     return get_drafted_players()
 
 
-@app.route('/players/search')
+@ app.route('/players/search')
 def search_player(player_id=''):
     arg = request.args.get('player_id')
     if arg:

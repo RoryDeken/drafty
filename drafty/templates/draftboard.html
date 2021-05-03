@@ -202,7 +202,7 @@
                   </tr>
                 </thead>
                 <tbody id="app">
-                  <tr v-for="(player, index) in available" v-show="!player.drafted">
+                  <tr v-for="(player, index) in availableLimit">
                       <td>[[ player.rank ]]</td>
                     <td>[[ player.firstName ]] [[ player.lastName ]]</td>
                     <td>[[ player.team ]]</td>
@@ -238,7 +238,7 @@
                    
                   <tr v-for="(player, index) in players">
                     <td>[[ index + 1]]</td>
-                    <td>[[ player.id ]]</td>
+                    <td>[[ player.player_id ]]</td>
                     <td>[[ player.firstName ]] [[ player.lastName ]] </td>
                     <td>[[ player.team ]]</td>
                     <td>[[ player.position ]]</td>
@@ -255,11 +255,11 @@
         <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
         <script type="text/javascript">
           new Vue({ el: '#app', delimiters: ['[[', ']]'], data() { 
-            return { players: null, available: null } }, 
+            return { players: [], available: [] } }, 
             mounted() {
         // GET request using fetch with error handling
-        this.players = ""
-        this.available= ""
+        this.players = []
+        this.available= []
         fetch("/players/drafted/")
           .then(async response => {
             const data = await response.json();
@@ -286,9 +286,6 @@
                 const error = (data && data.message) || response.statusText;
                 return Promise.reject(error);
               }
-              data.forEach((item, i) => {
-                item.drafted = false
-              });
               this.available = data
             })
             .catch(error => {
@@ -299,12 +296,16 @@
       methods: {
         
         add: function(player, draft){
-          player.drafted = true
           fetch('/players/select/' + player.id + '/' + draft, {
         method: 'post'
       });
         }
-      }
+      },
+      computed: {
+    availableLimit() {
+        return this.available.slice(0, 20)
+    }
+}
     })
         </script>
         <div class="row">

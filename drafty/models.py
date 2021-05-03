@@ -21,8 +21,8 @@ class Drafted(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     player_id = db.Column(db.String(5), db.ForeignKey(
         'players.id'), nullable=False)
-    draft_id = db.Column(db.Integer(), db.ForeignKey(
-        'drafts.id'), nullable=False)
+    draft_id = db.Column(db.Integer())
+    # db.ForeignKey('drafts.id'), nullable=True)
     firstName = db.Column(db.String(200))
     lastName = db.Column(db.String(200))
     team = db.Column(db.String(5))
@@ -39,7 +39,7 @@ class Draft(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(200))
     rounds = db.Column(db.Integer())
-    drafted = db.relationship('Drafted')
+    #drafted = db.relationship('Drafted')
 
     def __repr__(self):
         return "Draft(id='%s', name='%s', self.rounds)>" % (self.id, self.name, self.rounds)
