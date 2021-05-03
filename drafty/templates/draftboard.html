@@ -207,7 +207,7 @@
                     <td>[[ player.firstName ]] [[ player.lastName ]]</td>
                     <td>[[ player.team ]]</td>
                     <td>[[ player.position]]</td>
-                    <td><button @click="add(player)">Draft</button></td>
+                    <td><button @click="add(player, 3)">Draft</button></td>
                   </tr>
                   
                 
@@ -298,9 +298,9 @@
       },
       methods: {
         
-        add: function(player){
+        add: function(player, draft){
           player.drafted = true
-          fetch('/players/select/' + player.id, {
+          fetch('/players/select/' + player.id + '/' + draft, {
         method: 'post'
       });
         }

@@ -31,7 +31,7 @@ class Drafted(db.Model):
     ownedBy = db.Column(db.String(200))
 
     def __repr__(self):
-        return "Drafted(id='%s', firstName='%s', lastName='%s', team='%s', position='%s', round='%s', ownedBy='%s')>" % (self.id, self.firstName, self.lastName, self.team, self.position, self.round, self.ownedBy)
+        return "Drafted(id='%s', player_id='%s', draft_id='%s',  firstName='%s', lastName='%s', team='%s', position='%s', round='%s', ownedBy='%s')>" % (self.id, self.draft_id, self.player_id, self.firstName, self.lastName, self.team, self.position, self.round, self.ownedBy)
 
 
 class Draft(db.Model):

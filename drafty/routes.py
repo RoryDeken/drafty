@@ -7,7 +7,6 @@ from .models import db, Player, Drafted
 def get_all_players():
     players = []
     for instance in db.session.query(Player).order_by(Player.rank.asc()):
-        print(type(instance.rank))
         players.append(
             {
                 "id": instance.id,
@@ -16,8 +15,7 @@ def get_all_players():
                 "firstName": instance.firstName,
                 "lastName": instance.lastName,
                 "team": instance.team,
-                "position": instance.position,
-                "available": instance.available
+                "position": instance.position
             }
         )
     return jsonify(players)
@@ -29,20 +27,24 @@ def get_drafted_players():
         drafted_players.append(
             {
                 "id": instance.id,
+                "player_id": instance.player_id,
+                "draft_id": instance.draft_id,
                 "firstName": instance.firstName,
                 "lastName": instance.lastName,
                 "team": instance.team,
                 "position": instance.position,
                 "ownedBy": instance.ownedBy,
+                "round": instance.round
             }
         )
     return jsonify(drafted_players)
 
 
-def select_player(id):
+def select_player(id, draft):
     selected_player = get_player(id)
     new_drafted_player = Drafted(
-        id=selected_player.id,
+        player_id=selected_player.id,
+        draft_id=draft,
         firstName=selected_player.firstName,
         lastName=selected_player.lastName,
         team=selected_player.team,
@@ -51,6 +53,7 @@ def select_player(id):
         ownedBy='N/A'
     )
     db.session.add(new_drafted_player)
+    db.session.commit()
     return jsonify('Player added'), 200, {'ContentType': 'application/json'}
 
 
@@ -125,9 +128,9 @@ def get_all():
     return get_all_players()
 
 
-@app.route('/players/select/<id>', methods=['POST'])
-def add_player(id):
-    return select_player(id)
+@app.route('/players/select/<id>/<draft>', methods=['POST'])
+def add_player(id, draft):
+    return select_player(id, draft)
 
 
 @app.route('/players/drafted/')
