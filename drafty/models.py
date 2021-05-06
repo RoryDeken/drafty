@@ -48,9 +48,11 @@ class Draft(db.Model):
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer(), primary_key=True)
+    username = db.Column(db.String(200))
+    password = db.Column(db.String(200))
     firstName = db.Column(db.String(200))
     lastName = db.Column(db.String(200))
     teamName = db.Column(db.String(200))
 
     def __repr__(self):
-        return "User(id='%s', firstName='%s', lastName='%s', teamName='%s')>" % (self.id, self.firstName, self.lastName, self.teamName)
+        return "User(id='%s', username='%s', password='%s', firstName='%s', lastName='%s', teamName='%s')>" % (self.id, self.username, self.password, self.firstName, self.lastName, self.teamName)
