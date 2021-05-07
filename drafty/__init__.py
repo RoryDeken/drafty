@@ -15,9 +15,9 @@ def create_app():
     db.init_app(app)
 
     with app.app_context():
-        from . import routes  # Import routes
-        from . import import_players
         from . import auth
+        from . import routes
+        from . import import_players
         app.register_blueprint(auth.bp)
-        db.create_all()  # Create database tables for our data models
+        db.create_all()
         return app

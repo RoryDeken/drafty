@@ -71,7 +71,7 @@ def get_player(id):
 # @app.route('/<path:path>')
 @ app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('home.html')
 
 
 @ app.route('/page/players/')
